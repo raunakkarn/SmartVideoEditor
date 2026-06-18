@@ -163,3 +163,36 @@ async def thumbnail(
     ])
 
     return FileResponse(output_path)
+
+@app.post("/compress")
+async def compress_video(
+    file: UploadFile = File(...),
+    crf: int = Form(...)
+):
+
+    input_path = os.path.join(
+        UPLOAD_DIR,
+        f"{uuid.uuid4()}_{file.filename}"
+    )
+
+    with open(input_path, "wb") as f:
+        f.write(await file.read())
+
+    output_path = os.path.join(
+        OUTPUT_DIR,
+        f"compressed_{file.filename}"
+    )
+
+    subprocess.run([
+        "ffmpeg",
+        "-y",
+        "-i",
+        input_path,
+        "-vcodec",
+        "libx264",
+        "-crf",
+        str(crf),
+        output_path
+    ])
+
+    return FileResponse(output_path)

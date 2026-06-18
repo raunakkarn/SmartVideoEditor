@@ -15,7 +15,10 @@ operation = st.selectbox(
     [
         "Thumbnail",
         "Audio Extraction",
-        "Trim"
+        "Trim",
+        "Convert",
+        "Compress",
+        "Resize"
     ]
 )
 
@@ -119,3 +122,122 @@ if uploaded_file:
 
             else:
                 st.error("Video trimming failed")
+    elif operation == "Convert":
+    
+        fmt = st.selectbox(
+            "Output Format",
+            ["mp4", "mkv", "avi", "mov"]
+        )
+    
+        if st.button("Convert Video"):
+    
+            files = {
+                "file": (
+                    uploaded_file.name,
+                    uploaded_file,
+                    "video/mp4"
+                )
+            }
+    
+            data = {
+                "fmt": fmt
+            }
+    
+            response = requests.post(
+                f"{BACKEND_URL}/convert",
+                files=files,
+                data=data
+            )
+    
+            if response.status_code == 200:
+    
+                st.download_button(
+                    "Download Converted Video",
+                    response.content,
+                    file_name=f"converted.{fmt}"
+                )
+    
+            else:
+                st.error("Conversion failed")
+    
+    elif operation == "Compress":
+    
+        crf = st.slider(
+            "Compression Level",
+            min_value=18,
+            max_value=35,
+            value=28
+        )
+    
+        if st.button("Compress Video"):
+    
+            files = {
+                "file": (
+                    uploaded_file.name,
+                    uploaded_file,
+                    "video/mp4"
+                )
+            }
+    
+            data = {
+                "crf": crf
+            }
+    
+            response = requests.post(
+                f"{BACKEND_URL}/compress",
+                files=files,
+                data=data
+            )
+    
+            if response.status_code == 200:
+    
+                st.download_button(
+                    "Download Compressed Video",
+                    response.content,
+                    file_name=f"compressed_{uploaded_file.name}"
+                )
+    
+            else:
+                st.error("Compression failed")
+
+    elif operation == "Resize":
+    
+        resolution = st.selectbox(
+            "Resolution",
+            [
+                "1920:1080",
+                "1280:720",
+                "854:480"
+            ]
+        )
+    
+        if st.button("Resize Video"):
+    
+            files = {
+                "file": (
+                    uploaded_file.name,
+                    uploaded_file,
+                    "video/mp4"
+                )
+            }
+    
+            data = {
+                "resolution": resolution
+            }
+    
+            response = requests.post(
+                f"{BACKEND_URL}/resize",
+                files=files,
+                data=data
+            )
+    
+            if response.status_code == 200:
+    
+                st.download_button(
+                    "Download Resized Video",
+                    response.content,
+                    file_name=f"resized_{uploaded_file.name}"
+                )
+    
+            else:
+                st.error("Resize failed")
