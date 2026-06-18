@@ -1,3 +1,20 @@
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env
+
+# Streamlit
+.streamlit/
+
+# Generated Media
+uploads/*
+outputs/*
+
+# Keep directories
+!uploads/.gitkeep
+!outputs/.gitkeep
